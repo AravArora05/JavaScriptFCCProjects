@@ -1,55 +1,66 @@
 const searchButton = document.getElementById("search-button");
-const searchInput = document.getElementById("search-input"); 
+const searchInput = document.getElementById("search-input");
 const nameElement = document.getElementById("pokemon-name");
 const idElement = document.getElementById("pokemon-id");
-
-const image = document.getElementById("image")
-const weightElement = document.getElementById("weight");
-const heightElement = document.getElementById("height"); 
-const typesElement = document.getElementById("types"); 
-const hpElement = document.getElementById("hp");
-const attackElement = document.getElementById("attack");
-const defenseElement = document.getElementById("defense");
-const specialAttackElement = document.getElementById("special-attack");
-const specialDefenseElement = document.getElementById("special-defense");
-const speedElement = document.getElementById("speed");
+const image = document.getElementById("image");
+const typesElement = document.getElementById("types");
+const statsContainer = document.getElementById("stats-container");
 
 searchButton.addEventListener("click", () => {
-    let searching = searchInput.value.toLowerCase(); // Convert to lowercase for consistency
-    console.log("Searching for:", searching);
+    const searching = searchInput.value.toLowerCase();
 
     fetch(`https://pokeapi-proxy.freecodecamp.rocks/api/pokemon/${searching}`)
         .then((res) => {
-            if (!res.ok) {
-                throw new Error("Pokémon not found");
-            }
+            
             return res.json();
         })
         .then((pokemon) => {
-            console.log("Fetched Pokémon data:", pokemon);
-            console.log("Pokémon name:", pokemon.name);
-            nameElement.textContent = pokemon.name.toUpperCase();
-            idElement.textContent = pokemon.id;
-            heightElement.textContent = pokemon.height;
-            weightElement.textContent = pokemon.weight;
-            attackElement.textContent = pokemon.stats.find(poki => poki.stat.name === "attack").base_stat;
-            hpElement.textContent = pokemon.stats.find(poki => poki.stat.name === "hp").base_stat;
-            defenseElement.textContent = pokemon.stats.find(poki => poki.stat.name === "defense").base_stat;
-            specialAttackElement.textContent = pokemon.stats.find(poki => poki.stat.name === "special-attack").base_stat;
-            specialDefenseElement.textContent = pokemon.stats.find(poki => poki.stat.name === "special-defense").base_stat;
-            speedElement.textContent = pokemon.stats.find(poki => poki.stat.name === "speed").base_stat;
             
-            typesElement.innerHTML = '';
-
-            
-            typesElement.innerHTML += pokemon.types.map(type => 
-                `<p class="${type.type.name}">${type.type.name.toUpperCase()}</p>`
-            ).join('');
-            
-            image.innerHTML += `<img id="sprite" src="${pokemon.sprites.front_default}">`
+            updateContent(pokemon);
         })
         .catch((error) => {
-            console.error("Error fetching Pokémon:", error);
+        
             alert("Pokémon not found");
         });
 });
+
+function updateContent(pokemon) {
+    nameElement.textContent = pokemon.name;
+    idElement.textContent = pokemon.id;
+
+/**
+ * Wasn't sure if this was going to work, but I used the innerHTML properties to figure it out
+ */
+
+    image.innerHTML = `<img id="sprite" class="w-full h-auto" src="${pokemon.sprites.front_default}" alt="Pokemon Sprite">`;
+
+    // Update types
+    typesElement.innerHTML = pokemon.types.map(type => 
+        `<p class="type bg-gray-200 p-1 m-1 rounded">${type.type.name.toUpperCase()}</p>`
+    ).join('');
+
+    statsContainer.innerHTML = '';
+
+    const pokemonStats = [
+        { label: 'Weight', id: 'weight', value: pokemon.weight },
+        { label: 'Height', id: 'height', value: pokemon.height },
+        { label: 'HP', id: 'hp', value: pokemon.stats.find(stat => stat.stat.name === "hp").base_stat },
+        { label: 'Attack', id: 'attack', value: pokemon.stats.find(stat => stat.stat.name === "attack").base_stat },
+        { label: 'Defense', id: 'defense', value: pokemon.stats.find(stat => stat.stat.name === "defense").base_stat },
+        { label: 'Special Attack', id: 'special-attack', value: pokemon.stats.find(stat => stat.stat.name === "special-attack").base_stat },
+        { label: 'Special Defense', id: 'special-defense', value: pokemon.stats.find(stat => stat.stat.name === "special-defense").base_stat },
+        { label: 'Speed', id: 'speed', value: pokemon.stats.find(stat => stat.stat.name === "speed").base_stat }
+    ];
+
+
+    statsContainer.innerHTML = pokemonStats.map(stat => 
+        `<div class="stat">
+            <p>${stat.label}</p>
+            <p id="${stat.id}">${stat.value}</p>
+        </div>`
+    ).join('');
+
+    /**
+     * Joined them to make sure that it was done dynamically. Thought it worked fine even if it doesn't appear at the start, have some CSS properties to help with this
+     */
+}
