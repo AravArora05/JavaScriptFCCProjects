@@ -1,0 +1,40 @@
+
+.box {
+  width: 400px;
+}
+
+
+
+.stat {
+  display: flex;
+}
+.stat p {
+  text-align: center;
+  padding: 2px;
+  border: 1px solid black;
+  background-color: blue;
+  color: white;
+  margin-top: 5px;
+}
+.stat p:first-of-type {
+  width: 66%;
+  margin-right: 5px;
+}
+.stat p:last-of-type {
+  width: 66%;  
+}
+
+.stat:first-of-type p {
+    background-color: green;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+#types p {
+  background-color: lightblue;
+  border: 1px solid black;
+  padding: 5px;
+  border-radius: 5px;
+
+  margin-right: 5px;
+}
